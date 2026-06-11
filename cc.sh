@@ -367,7 +367,7 @@ case "$command" in
         debug_flags="-g"
         vcheck_flags="${SPACK_ALWAYS_FFLAGS}"
         ;;
-    hip)
+    hip|hipcc)
         command="$SPACK_HIPCXX"
         language="HIP"
         comp="HIPCXX"
