@@ -117,6 +117,12 @@ class Camp(CMakePackage, CudaPackage, ROCmPackage):
         "please use a newer release.",
     )
 
+    def setup_build_environment(self, env: EnvironmentModifications) -> None:
+        if self.spec.satisfies("+rocm"):
+            # HIP_CLANG_PATH must be set to llvm-amdgpu/bin for hipconfig to
+            # succeed
+            self.spec["hip"].package.set_variables(env)
+
     def cmake_args(self):
         spec = self.spec
 
