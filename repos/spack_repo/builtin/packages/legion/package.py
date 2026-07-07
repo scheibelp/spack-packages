@@ -495,7 +495,17 @@ class Legion(CMakePackage, CudaPackage, ROCmPackage):
         return options
 
     def build(self, spec, prefix):
-        super().build(spec, prefix)
+        if spec.satisfies("+rocm"):
+            with working_dir(self.build_directory):
+                if self.generator == "Unix Makefiles":
+                    make(*self.build_targets, parallel=False)
+                elif self.generator == "Ninja":
+                    self.build_targets.append("-v")
+                    ninja(*self.build_targets, parallel=False)
+                else:
+                    raise ValueError(f"Unexpected generator for +rocm: {self.generator}")
+        else:
+            super().build(spec, prefix)
         if spec.satisfies("+prof"):
             with working_dir(join_path(self.stage.source_path, "tools", "legion_prof_rs")):
                 cargo = which("cargo", required=True)
