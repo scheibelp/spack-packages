@@ -725,13 +725,13 @@ class Trilinos(CMakePackage, CudaPackage, ROCmPackage):
 
         if "+rocm" in spec:
             if "+mpi" in spec:
-                env.set("OMPI_CXX", self.spec["hip"].hipcc)
-                env.set("MPICH_CXX", self.spec["hip"].hipcc)
-                env.set("MPICXX_CXX", self.spec["hip"].hipcc)
+                env.set("OMPI_CXX", env["HIPCXX"])
+                env.set("MPICH_CXX", env["HIPCXX"])
+                env.set("MPICXX_CXX", env["HIPCXX"])
             else:
-                env.set("CXX", self.spec["hip"].hipcc)
+                env.set("CXX", env["HIPCXX"])
             if "+stk" in spec:
-                # Using CXXFLAGS for hipcc which doesn't use flags in the spack wrappers
+                # Using CXXFLAGS for HIPCXX which doesn't use flags in the spack wrappers
                 env.set("CXXFLAGS", "-DSTK_NO_BOOST_STACKTRACE")
 
     def cmake_args(self):

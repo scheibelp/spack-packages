@@ -546,15 +546,7 @@ class Kokkos(CMakePackage, CudaPackage, ROCmPackage):
             options.append(self.define("CMAKE_CXX_COMPILER", self.kokkos_cxx))
         elif "+rocm" in self.spec:
             if "+cmake_lang" in self.spec:
-                if self.spec.satisfies("%cxx=clang") or self.spec.satisfies("%cxx=rocmcc"):
-                    options.append(self.define("CMAKE_HIP_COMPILER", self.compiler.cxx))
-                else:
-                    options.append(
-                        self.define(
-                            "CMAKE_HIP_COMPILER",
-                            join_path(self.spec["llvm-amdgpu"].prefix.bin, "amdclang++"),
-                        )
-                    )
+                options.append(self.define("CMAKE_HIP_COMPILER", env["HIPCXX"]))
                 options.append(from_variant("CMAKE_HIP_STANDARD", "cxxstd"))
                 options.append(
                     self.define(
@@ -563,7 +555,7 @@ class Kokkos(CMakePackage, CudaPackage, ROCmPackage):
                 )
                 options.append(self.define("CMAKE_HIP_EXTENSIONS", False))
             elif not (self.spec.satisfies("%cxx=clang") or self.spec.satisfies("%cxx=rocmcc")):
-                options.append(self.define("CMAKE_CXX_COMPILER", self.spec["hip"].hipcc))
+                options.append(self.define("CMAKE_CXX_COMPILER", env["HIPCXX"]))
             options.append(self.define("Kokkos_ENABLE_ROCTHRUST", True))
 
             # TODO deprecation of v4: remove partially
