@@ -214,7 +214,7 @@ class CompilerPackage(PackageBase):
     def hip(self) -> Optional[str]:
         assert self.spec.concrete, "cannot retrieve HIP compiler, spec is not concrete"
         if self.spec.external:
-            return self.spec.extra_attributes["compilers"].get("hip", None)
+            return self.spec.extra_attributes.get("compilers", {}).get("hip", None)
         return self._hip_path()
 
     def _hip_path(self) -> Optional[str]:

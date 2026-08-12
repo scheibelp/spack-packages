@@ -473,14 +473,24 @@ class LlvmAmdgpu(CMakePackage, LlvmDetection, CompilerPackage):
         args.append(self.define("RUNTIMES_CMAKE_ARGS", runtime_cmake_args))
         return args
 
-    compiler_languages = ["c", "cxx", "fortran", "hip-lang"]
+    compiler_languages = ["c", "cxx", "fortran", "hip"]
     c_names = ["amdclang"]
     cxx_names = ["amdclang++"]
     fortran_names = ["amdflang"]
-    hip_lang_names = ["amdclang++"]
+    hip_names = ["amdclang++"]
     compiler_version_argument = "--version"
     compiler_version_regex = r"roc-(\d+[._]\d+[._]\d+)"
     installed_dir_regex = r"InstalledDir:\s*(.+)"
+
+    @classmethod
+    def determine_variants(cls, exes, version_str):
+        variant_str, attrs = super().determine_variants(exes, version_str)
+        compilers = attrs.get("compilers", {})
+        if "cxx" in compilers and "hip" not in compilers:
+            compilers["hip"] = compilers["cxx"]
+        elif "hip" in compilers and "cxx" not in compilers:
+            compilers["cxx"] = compilers["hip"]
+        return variant_str, attrs
 
     @classmethod
     def determine_version(cls, exe):
