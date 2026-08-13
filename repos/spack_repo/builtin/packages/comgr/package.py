@@ -103,8 +103,7 @@ class Comgr(CMakePackage):
         "7.2.3",
         "7.13.0",
     ]:
-        # in reality this should be a link type dep, but libLLVM is linked statically,
-        # and just requiring llvm-amdgpu as a compiler suffices for now.
+        # llvm libs are linked statically, so this *could* be a build dep
         depends_on(f"llvm-amdgpu@{ver}", when=f"@{ver}")
         depends_on(f"rocm-cmake@{ver}", when=f"@{ver}", type="build")
 
