@@ -364,6 +364,10 @@ class Legion(CMakePackage, CudaPackage, ROCmPackage):
         "sysomp", default=False, description="Use system OpenMP implementation instead of Realm's"
     )
 
+    @property
+    def parallel(self):
+        return not self.spec.satisfies("+rocm")
+
     def flag_handler(self, name, flags):
         if name == "cxxflags":
             if self.spec.satisfies("%oneapi@2025:") or self.spec.satisfies("%cxx=clang@20:"):
@@ -495,17 +499,7 @@ class Legion(CMakePackage, CudaPackage, ROCmPackage):
         return options
 
     def build(self, spec, prefix):
-        if spec.satisfies("+rocm"):
-            with working_dir(self.build_directory):
-                if self.generator == "Unix Makefiles":
-                    make(*self.build_targets, parallel=False)
-                elif self.generator == "Ninja":
-                    self.build_targets.append("-v")
-                    ninja(*self.build_targets, parallel=False)
-                else:
-                    raise ValueError(f"Unexpected generator for +rocm: {self.generator}")
-        else:
-            super().build(spec, prefix)
+        super().build(spec, prefix)
         if spec.satisfies("+prof"):
             with working_dir(join_path(self.stage.source_path, "tools", "legion_prof_rs")):
                 cargo = which("cargo", required=True)
