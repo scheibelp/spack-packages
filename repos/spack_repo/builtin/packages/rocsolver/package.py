@@ -78,6 +78,7 @@ class Rocsolver(ROCmLibrary, CMakePackage):
 
     depends_on("c", type="build")  # generated
     depends_on("cxx", type="build")  # generated
+    depends_on("hip-lang", type="build")
 
     depends_on("cmake@3.8:", type="build")
     depends_on("fmt@7:8.0.1", type="test")
@@ -162,7 +163,6 @@ class Rocsolver(ROCmLibrary, CMakePackage):
         return args
 
     def setup_build_environment(self, env: EnvironmentModifications) -> None:
-        env.set("CXX", self.spec["hip"].hipcc)
         if self.spec.satisfies("+asan"):
             env.set("CC", f"{self.spec['llvm-amdgpu'].prefix}/bin/clang")
             env.set("CXX", f"{self.spec['llvm-amdgpu'].prefix}/bin/clang++")
