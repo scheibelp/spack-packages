@@ -446,20 +446,19 @@ class Kokkos(CMakePackage, CudaPackage, ROCmPackage):
         Returns the path to libclang_rt.builtins-x86_64.a by running
         amdclang++ --print-resource-dir and searching for the library.
         """
-        amdclang = join_path(self.spec["llvm-amdgpu"].prefix.bin, "amdclang++")
+        amdclang = Executable(join_path(self.spec["llvm-amdgpu"].prefix.bin, "amdclang++"))
 
         try:
-            output = Executable(amdclang)("--print-resource-dir", output=str, error=str)
-            resource_dir = output.strip()
+            arch = amdclang("-dumpmachine", output=str, error=str).strip().split("-")[0]
+            resource_dir = amdclang("--print-resource-dir", output=str, error=str).strip()
 
-            # Search for libclang_rt.builtins* under the resource directory
             clang_rt_libs = find(resource_dir, "libclang_rt.builtins*")
 
             if clang_rt_libs:
-                x86_64libs = list(x for x in clang_rt_libs if "x86_64" in x)
-                if x86_64libs:
-                    return list(sorted(x86_64libs))[0]
-                return list(sorted(clang_rt_libs))[0]
+                arch_libs = [x for x in clang_rt_libs if arch in x]
+                if arch_libs:
+                    return sorted(arch_libs)[0]
+                return sorted(clang_rt_libs)[0]
             else:
                 raise RuntimeError(f"Could not find libclang_rt.builtins* in {resource_dir}")
         except Exception as e:
