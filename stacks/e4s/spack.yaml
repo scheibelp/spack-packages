@@ -393,7 +393,7 @@ spack:
     - hypre +rocm
     - kokkos +rocm
     - "lammps@20260211: +rocm fft_kokkos=hipfft"
-    - legion
+    - legion +rocm
     - libceed
     - magma ~cuda
     - mfem +rocm
