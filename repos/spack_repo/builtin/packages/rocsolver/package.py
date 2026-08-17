@@ -121,6 +121,8 @@ class Rocsolver(ROCmLibrary, CMakePackage):
             depends_on(f"rocsparse@{ver} amdgpu_target={tgt}", when=f"@{ver} amdgpu_target={tgt}")
             depends_on(f"rocblas@{ver} amdgpu_target={tgt}", when=f"@{ver} amdgpu_target={tgt}")
 
+    requires("%c,cxx=llvm-amdgpu", when="%c")
+
     @property
     def root_cmakelists_dir(self):
         if self.spec.satisfies("@7.2:"):

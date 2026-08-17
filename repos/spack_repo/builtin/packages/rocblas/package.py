@@ -251,6 +251,8 @@ class Rocblas(ROCmLibrary, CMakePackage):
             when=f"{t_version} +tensile",
         )
 
+    requires("%c,cxx=llvm-amdgpu", when="%c")
+
     patch("0007-add-rocm-openmp-extras-include-dir.patch", when="@5.7")
     patch("0008-link-roctracer.patch", when="@6.4")
     patch("0009-use-rocm-smi-config.patch", when="@6.4:7.1")
