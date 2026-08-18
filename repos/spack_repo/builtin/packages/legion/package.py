@@ -366,7 +366,7 @@ class Legion(CMakePackage, CudaPackage, ROCmPackage):
 
     @property
     def parallel(self):
-        return not self.spec.satisfies("+rocm")
+        return not self.spec.satisfies("@:26.06 +rocm")
 
     def flag_handler(self, name, flags):
         if name == "cxxflags":
