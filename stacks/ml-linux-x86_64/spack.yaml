@@ -142,6 +142,10 @@ spack:
         hwloc:
           require:
             - ~rocm
+    needs: [hip-compiler]
+  - group: hip-compiler
+    specs:
+    - llvm-amdgpu
 
   ci:
     pipeline-gen:
