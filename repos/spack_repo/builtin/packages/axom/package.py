@@ -99,6 +99,7 @@ class Axom(CachedCMakePackage, CudaPackage, ROCmPackage):
 
     version("main", branch="main")
     version("develop", branch="develop")
+    version("0.15.0", tag="v0.15.0", commit="da2a50a7ee661896400d49b019e17bbe7ab5bd44")
     version("0.14.0", tag="v0.14.0", commit="146c8c15386a810791b7ab5c7fcb288cadea6151")
     version("0.13.0", tag="v0.13.0", commit="d00f6c66ef390ad746ae840f1074d982513611ac")
     version("0.12.0", tag="v0.12.0", commit="297544010a3dfb98145a1a85f09f9c648c00a18c")
@@ -218,6 +219,7 @@ class Axom(CachedCMakePackage, CudaPackage, ROCmPackage):
     depends_on("cmake@3.21:", type="build", when="+rocm")
 
     depends_on("blt", type="build")
+    depends_on("blt@0.7.2:", type="build", when="@0.15:")
     depends_on("blt@0.7.1:", type="build", when="@0.12:")
     depends_on("blt@0.7", type="build", when="@0.11:")
     depends_on("blt@0.6.2", type="build", when="@0.9:0.10")
@@ -242,6 +244,7 @@ class Axom(CachedCMakePackage, CudaPackage, ROCmPackage):
 
     with when("+umpire"):
         depends_on("umpire")
+        depends_on("umpire@2026.07.1:", when="@0.15:")
         depends_on("umpire@2025.12:", when="@0.13:")
         depends_on("umpire@2025.09:", when="@0.12:")
         depends_on("umpire@2025.03", when="@0.11")
@@ -255,6 +258,7 @@ class Axom(CachedCMakePackage, CudaPackage, ROCmPackage):
 
     with when("+raja"):
         depends_on("raja")
+        depends_on("raja@2026.07:", when="@0.15:")
         depends_on("raja@2025.12.1:", when="@0.13:")
         depends_on("raja@2025.09:", when="@0.12:")
         depends_on("raja@2025.03", when="@0.11")
@@ -274,12 +278,6 @@ class Axom(CachedCMakePackage, CudaPackage, ROCmPackage):
         depends_on("adiak")
         depends_on("caliper+adiak~papi")
 
-        depends_on("caliper+cuda", when="+cuda")
-        depends_on("caliper~cuda", when="~cuda")
-
-        depends_on("caliper+rocm", when="+rocm")
-        depends_on("caliper~rocm", when="~rocm")
-
         for dep in ["adiak", "caliper"]:
             depends_on(f"{dep}+mpi", when="+mpi")
             depends_on(f"{dep}~mpi", when="~mpi")
@@ -291,23 +289,19 @@ class Axom(CachedCMakePackage, CudaPackage, ROCmPackage):
             depends_on(f"adiak+{fwd}", when=f"+{fwd}")
 
     with when("+caliper"):
-        for fwd in ("cuda", "rocm", "mpi", "shared"):
+        for fwd in ("mpi", "shared"):
             depends_on(f"caliper+{fwd}", when=f"+{fwd}")
 
     for val in CudaPackage.cuda_arch_values:
         ext_cuda_dep = f"+cuda cuda_arch={val}"
         depends_on(f"raja {ext_cuda_dep}", when=f"+raja {ext_cuda_dep}")
         depends_on(f"umpire {ext_cuda_dep}", when=f"+umpire {ext_cuda_dep}")
-        depends_on(f"caliper {ext_cuda_dep}", when=f"+caliper {ext_cuda_dep}")
-        depends_on(f"caliper {ext_cuda_dep}", when=f"+profiling {ext_cuda_dep}")
         depends_on(f"mfem {ext_cuda_dep}", when=f"+mfem {ext_cuda_dep}")
 
     for val in ROCmPackage.amdgpu_targets:
         ext_rocm_dep = f"+rocm amdgpu_target={val}"
         depends_on(f"raja {ext_rocm_dep}", when=f"+raja {ext_rocm_dep}")
         depends_on(f"umpire {ext_rocm_dep}", when=f"+umpire {ext_rocm_dep}")
-        depends_on(f"caliper {ext_rocm_dep}", when=f"+caliper {ext_rocm_dep}")
-        depends_on(f"caliper {ext_rocm_dep}", when=f"+profiling {ext_rocm_dep}")
         depends_on(f"mfem {ext_rocm_dep}", when=f"+mfem {ext_rocm_dep}")
 
     depends_on("rocprim", when="+rocm")
@@ -321,12 +315,12 @@ class Axom(CachedCMakePackage, CudaPackage, ROCmPackage):
 
     # Python
     with when("+python"):
-        depends_on("python")
+        depends_on("python@3.9:")
 
         # extending python allows spack environment views to import axom from python
         extends("python")
 
-        depends_on("py-nanobind@2.7.0:")
+        depends_on("py-nanobind@2.10.0:")
         depends_on("py-pytest")
         depends_on("py-packaging")
         depends_on("py-pygments")
