@@ -8,7 +8,6 @@ from os.path import split
 from spack_repo.builtin.build_systems.generic import Package
 
 from spack.package import *
-from spack.version import Version
 
 _versions = {
     "26.9.4-1": {
